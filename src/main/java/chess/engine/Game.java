@@ -137,9 +137,15 @@ public class Game extends JPanel implements ActionListener {
 				if (piece == null) {
 					continue;
 				}
-				if (piece.getType().piece == ChessPiece.Piece.king && piece.getType().team.getValue() == board.gameOver) {
-					g2d.setPaint(new Color(200, 50, 50));
-					g2d.fillRect(oX + piece.getX() * TILE_SIZE, oY + piece.getY() * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+				if (board.gameOver != 0) {
+					if (piece.getType().piece == ChessPiece.Piece.king) {
+						if (piece.getType().team.getValue() == board.gameOver) {
+							g2d.setPaint(new Color(200, 50, 50));
+						} else if (piece.getType().team.getValue() == board.gameOver / 3) {
+							g2d.setPaint(Color.YELLOW);
+						}
+						g2d.fillRect(oX + piece.getX() * TILE_SIZE, oY + piece.getY() * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+					}
 				}
 				if (piece == focused) {
 					continue;
@@ -157,8 +163,14 @@ public class Game extends JPanel implements ActionListener {
 				if (piece == null) {
 					continue;
 				}
-				if (piece.getType().piece == ChessPiece.Piece.king && piece.getType().team.getValue() == board.gameOver) {
-					g2d.setPaint(new Color(200, 50, 50));
+				if (board.gameOver != 0) {
+					if (piece.getType().piece == ChessPiece.Piece.king) {
+						if (piece.getType().team.getValue() == board.gameOver) {
+							g2d.setPaint(new Color(200, 50, 50));
+						} else if (piece.getType().team.getValue() == board.gameOver / 3) {
+							g2d.setPaint(Color.YELLOW);
+						}
+					}
 					g2d.fillRect(oX + (7 - piece.getX()) * TILE_SIZE, oY + (7 - piece.getY()) * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 				}
 				if (piece == focused) {
@@ -255,7 +267,7 @@ public class Game extends JPanel implements ActionListener {
 		repaint();
 	}
 
-	public int updateForMate(ChessPiece.Team team) {
+	public void updateForMate(ChessPiece.Team team) {
 		ArrayList<ChessPiece> opponent = board.getPieces().get(team == ChessPiece.Team.white ? ChessPiece.Team.black : ChessPiece.Team.white);
 		ChessPiece king = kings.get(team);
 		board.clearBools();
@@ -265,8 +277,10 @@ public class Game extends JPanel implements ActionListener {
 			p.setPinner(null);
 		});
 		if (!board.getBool(king.getX(), king.getY())) {
-			return 0;
+			board.gameOver = 0;
+			return;
 		}
+		board.gameOver = team.getValue() * 3;
 		ArrayList<ChessPiece> allies = board.getPieces().get(team);
 		board.clearBools();
 		opponent.forEach(p -> p.fillAttack(board));
@@ -296,15 +310,16 @@ public class Game extends JPanel implements ActionListener {
 		}
 		board.clearBools();
 		opponent.forEach(p -> p.fillAttack(board));
-		return movesCount == 0 ? team.getValue() : 0;
+		if (movesCount == 0) {
+			board.gameOver = team.getValue();
+		}
 	}
 
 	public void nextTurn() {
-		var prevPieces = board.getPieces().get(board.turn);
 		board.switchTurn();
 		var nextPieces = board.getPieces().get(board.turn);
 		nextPieces.forEach(ChessPiece::clearMoves);
-		board.gameOver = updateForMate(board.turn);
+		updateForMate(board.turn);
 		int movesCount = 0;
 		for (var p : nextPieces) {
 			movesCount += p.getLegalMoves(board).size();
