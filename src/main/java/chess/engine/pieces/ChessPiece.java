@@ -11,7 +11,7 @@ public abstract class ChessPiece {
         black(1);
 
         public final int value;
-        private Team(int value) {
+        Team(int value) {
             this.value = value;
         }
 
@@ -76,10 +76,6 @@ public abstract class ChessPiece {
         turn = val;
     }
 
-    public ArrayList<Point> getAllowedMoves() {
-        return allowedMoves;
-    }
-
     public void fillAttack(Board board) {
         for (var m : getPossibleMoves(board)) {
             board.setBool(m, true);
@@ -110,10 +106,10 @@ public abstract class ChessPiece {
     public ChessPiece tryMove(int x, int y, Board board) {
         var retVal = board.get(x, y);
         snapshot = new PieceSnapshot(this.x, this.y, retVal);
-        board.invisibleSet(this.x, this.y, null);
+        board.silentSet(this.x, this.y, null);
         this.x = x;
         this.y = y;
-        board.invisibleSet(x, y,this);
+        board.silentSet(x, y,this);
         return retVal;
     }
 
@@ -127,10 +123,10 @@ public abstract class ChessPiece {
         if (snapshot == null) {
             return false;
         }
-        board.invisibleSet(x, y, snapshot.captured);
+        board.silentSet(x, y, snapshot.captured);
         x = snapshot.x;
         y = snapshot.y;
-        board.invisibleSet(x, y, this);
+        board.silentSet(x, y, this);
         snapshot = null;
         return true;
     }

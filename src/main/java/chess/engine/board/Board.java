@@ -97,7 +97,10 @@ public class Board {
         values[y][x] = value;
     }
 
-    public void invisibleSet(int x, int y, ChessPiece value) {
+    /**
+     * Doesn't update board's objects containers
+     */
+    public void silentSet(int x, int y, ChessPiece value) {
         values[y][x] = value;
     }
 
