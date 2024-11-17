@@ -1,3 +1,5 @@
+### **IMPORTANT: Assets do not belong to me and are taken from [chess.com](https://www.chess.com)**
+****
 <div align="center">
   <h1 style="text-align: center; width: 100%">Minimalistic chess♟️ on java swing</h1>
   
