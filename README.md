@@ -5,7 +5,7 @@
 </div>
 
 ### Game info
-* If the window size bigger than the board, color behind will show whose turn it is\
+* If the window size bigger than the board, color behind will show whose turn it is
 * If the color is grey - stale mate
 * If king's square is yellow - check
 * If king's square is red - mate
