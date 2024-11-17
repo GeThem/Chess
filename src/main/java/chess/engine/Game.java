@@ -25,7 +25,6 @@ public class Game extends JPanel implements ActionListener {
 	private BufferedImage backgroundImage;
 	private Board board;
 	private ChessPiece focused = null, focusedLast = null;
-	private Map<ChessPiece.Team, ChessPiece> kings;
 	private Map<ChessPiece.Team, JPopupMenu> popups;
 	private TurnState turnState;
 	private ArrayList<BoardSnapshot> history;
@@ -81,6 +80,9 @@ public class Game extends JPanel implements ActionListener {
 			}
 			popups.put(team, popup);
 		}
+		history = new ArrayList<>();
+
+		currSnapshotIndex = -1;
 		setupGame();
 
 		timer = new Timer(100, this);
@@ -88,8 +90,6 @@ public class Game extends JPanel implements ActionListener {
 	}
 
 	public void setupGame() {
-		history = new ArrayList<>();
-		kings = new HashMap<>();
 		board = new Board(WIDTH, HEIGHT, true);
 		for (int i = 0; i < 8; i++) {
 			board.set(ChessPieceFactory.getPiece(i, 6, ChessPiece.Team.white, ChessPiece.Piece.pawn, null));
@@ -98,8 +98,7 @@ public class Game extends JPanel implements ActionListener {
 			board.set(ChessPieceFactory.getPiece(i, 7, ChessPiece.Team.white, ChessPiece.Piece.values()[i], null));
 			board.set(ChessPieceFactory.getPiece(7 - i, 7, ChessPiece.Team.white, ChessPiece.Piece.values()[i], null));
 		}
-		kings.put(ChessPiece.Team.white, ChessPieceFactory.getPiece(4, 7, ChessPiece.Team.white, ChessPiece.Piece.king, null));
-		board.set(kings.get(ChessPiece.Team.white));
+		board.set(ChessPieceFactory.getPiece(4, 7, ChessPiece.Team.white, ChessPiece.Piece.king, null));
 		board.set(ChessPieceFactory.getPiece(3, 7, ChessPiece.Team.white, ChessPiece.Piece.queen, null));
 
 		for (int i = 0; i < 8; i++) {
@@ -109,12 +108,10 @@ public class Game extends JPanel implements ActionListener {
 			board.set(ChessPieceFactory.getPiece(i, 0, ChessPiece.Team.black, ChessPiece.Piece.values()[i], null));
 			board.set(ChessPieceFactory.getPiece(7 - i, 0, ChessPiece.Team.black, ChessPiece.Piece.values()[i], null));
 		}
-		kings.put(ChessPiece.Team.black, ChessPieceFactory.getPiece(4, 0, ChessPiece.Team.black, ChessPiece.Piece.king, null));
-		board.set(kings.get(ChessPiece.Team.black));
+		board.set(ChessPieceFactory.getPiece(4, 0, ChessPiece.Team.black, ChessPiece.Piece.king, null));
 		board.set(ChessPieceFactory.getPiece(3, 0, ChessPiece.Team.black, ChessPiece.Piece.queen, null));
 
 		snapshot();
-		currSnapshotIndex = 0;
 	}
 
 	@Override
@@ -269,7 +266,8 @@ public class Game extends JPanel implements ActionListener {
 
 	public void updateForMate(ChessPiece.Team team) {
 		ArrayList<ChessPiece> opponent = board.getPieces().get(team == ChessPiece.Team.white ? ChessPiece.Team.black : ChessPiece.Team.white);
-		ChessPiece king = kings.get(team);
+		ArrayList<ChessPiece> allies = board.getPieces().get(team);
+		ChessPiece king = allies.stream().filter(p -> p.getType().piece == ChessPiece.Piece.king && p.getType().team == team).findFirst().get();
 		board.clearBools();
 		opponent.forEach(p -> {
 			p.fillAttack(board);
@@ -281,7 +279,6 @@ public class Game extends JPanel implements ActionListener {
 			return;
 		}
 		board.gameOver = team.getValue() * 3;
-		ArrayList<ChessPiece> allies = board.getPieces().get(team);
 		board.clearBools();
 		opponent.forEach(p -> p.fillAttack(board));
 		king.clearMoves();
