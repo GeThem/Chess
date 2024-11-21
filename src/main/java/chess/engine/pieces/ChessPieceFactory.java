@@ -15,22 +15,13 @@ public class ChessPieceFactory {
         }
         if (type == null) {
             type = new PieceType(team, piece);
+            pieces.add(type);
         }
         return type;
     }
 
     public static ChessPiece getPiece(int x, int y, ChessPiece.Team team, ChessPiece.Piece piece, Object tag) {
-        PieceType type = null;
-        for (var val : pieces) {
-            if (val.team == team && val.piece == piece) {
-                type = val;
-                break;
-            }
-        }
-        if (type == null) {
-            type = new PieceType(team, piece);
-        }
-        pieces.add(type);
+        PieceType type = getType(team, piece);
         switch (piece) {
             case king -> {
                 return new King(x, y, type, tag);
