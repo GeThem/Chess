@@ -135,10 +135,10 @@ public class Game extends JPanel implements ActionListener {
 					continue;
 				}
 				if (board.gameOver != 0) {
-					if (piece.getType().piece == ChessPiece.Piece.king) {
+					if (piece.getType().piece == ChessPiece.Piece.king && piece.getType().team.getValue() * board.gameOver >= 0) {
 						if (piece.getType().team.getValue() == board.gameOver) {
 							g2d.setPaint(new Color(200, 50, 50));
-						} else if (piece.getType().team.getValue() == board.gameOver / 3) {
+						} else {
 							g2d.setPaint(Color.YELLOW);
 						}
 						g2d.fillRect(oX + piece.getX() * TILE_SIZE, oY + piece.getY() * TILE_SIZE, TILE_SIZE, TILE_SIZE);
@@ -161,14 +161,14 @@ public class Game extends JPanel implements ActionListener {
 					continue;
 				}
 				if (board.gameOver != 0) {
-					if (piece.getType().piece == ChessPiece.Piece.king) {
+					if (piece.getType().piece == ChessPiece.Piece.king && piece.getType().team.getValue() * board.gameOver >= 0) {
 						if (piece.getType().team.getValue() == board.gameOver) {
 							g2d.setPaint(new Color(200, 50, 50));
-						} else if (piece.getType().team.getValue() == board.gameOver / 3) {
+						} else {
 							g2d.setPaint(Color.YELLOW);
 						}
+						g2d.fillRect(oX + (7 - piece.getX()) * TILE_SIZE, oY + (7 - piece.getY()) * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 					}
-					g2d.fillRect(oX + (7 - piece.getX()) * TILE_SIZE, oY + (7 - piece.getY()) * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 				}
 				if (piece == focused) {
 					continue;
